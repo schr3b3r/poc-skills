@@ -1,0 +1,84 @@
+const fs = require('fs');
+const asciichart = require('asciichart');
+
+const dataFile = process.argv[2];
+if (!dataFile) {
+    console.error("Usage: node plot_vitals.js <path_to_json_file>");
+    process.exit(1);
+}
+
+if (!fs.existsSync(dataFile)) {
+    console.error(`File not found: ${dataFile}`);
+    process.exit(1);
+}
+
+const rawData = fs.readFileSync(dataFile, 'utf-8');
+let events;
+try {
+    events = JSON.parse(rawData);
+} catch (e) {
+    console.error("Failed to parse JSON", e);
+    process.exit(1);
+}
+
+if (!events || events.length === 0) {
+    console.log("No events found in the given time range.");
+    process.exit(0);
+}
+
+events.forEach(event => {
+    // Duration annotations store their human-readable name in metadata.name
+    // and their timestamps in recorded_at
+    const title = (event.metadata && event.metadata.name) ? event.metadata.name : 'Unknown Annotation';
+    
+    let startStr = "Unknown";
+    let endStr = "Unknown";
+    
+    if (event.recorded_at) {
+        if (event.recorded_at.start_time) startStr = new Date(event.recorded_at.start_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        if (event.recorded_at.end_time) endStr = new Date(event.recorded_at.end_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    }
+    
+    console.log(`\n=========================================================`);
+    console.log(`🏷️  ${title} (${startStr} - ${endStr})`);
+    console.log(`=========================================================`);
+
+    if (!event.heart_rate_series || event.heart_rate_series.length === 0) {
+        console.log("No heart rate data for this event window.\n");
+        return;
+    }
+
+    // Extract valid heart rate values
+    const hrValues = event.heart_rate_series
+        .map(pt => pt.mean_heart_rate)
+        .filter(val => val !== null);
+
+    if (hrValues.length === 0) {
+        console.log("Heart rate data was empty/null for this event window.\n");
+        return;
+    }
+
+    // Basic stats
+    const avg = Math.round(hrValues.reduce((a,b) => a+b, 0) / hrValues.length);
+    const max = Math.round(Math.max(...hrValues));
+    const min = Math.round(Math.min(...hrValues));
+    
+    console.log(`❤️  Avg: ${avg} bpm | Min: ${min} bpm | Max: ${max} bpm\n`);
+
+    // asciichart struggles if the array is way too large for terminal width.
+    // Sample it down to ~80 data points if it's huge.
+    let plotData = hrValues;
+    const MAX_POINTS = 80;
+    if (hrValues.length > MAX_POINTS) {
+        const step = Math.floor(hrValues.length / MAX_POINTS);
+        plotData = hrValues.filter((_, i) => i % step === 0);
+    }
+
+    const config = {
+        height:  10,
+        colors: [ asciichart.red ]
+    };
+
+    console.log(asciichart.plot(plotData, config));
+    console.log("\n");
+});
