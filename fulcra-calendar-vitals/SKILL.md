@@ -17,15 +17,19 @@ Use the bundled script `scripts/align.sh` to fetch and align the data. It output
 
 ```bash
 # Execute the alignment script for a specific time range (defaults to "1 day")
-./scripts/align.sh "1 week" > combined_data.json
+./scripts/align.sh "1 day" > combined_data.json
 ```
 
-You can also instantly visualize the heart rate curves in the terminal using the `plot_vitals.js` script:
+## ASCII Visualizations
 
-```bash
-# Requires asciichart to be installed: npm install asciichart
-node scripts/plot_vitals.js
-```
+If the user specifically uses the marketing prompt ("Hey, show me my heart rate based on my meetings today using Fulcra"), or explicitly asks for a visual representation or ASCII chart, you **MUST** provide the exact terminal output directly in the chat using the visualization script.
+
+1. Generate the JSON data using the `align.sh` script.
+2. Run the `plot_vitals.js` script, passing in the JSON data file. (Note: `npm install asciichart` is required).
+   ```bash
+   node scripts/plot_vitals.js combined_data.json
+   ```
+3. Wrap the exact output of the script inside a Markdown code block (` ```text `) and include it in your final chat response to the user so they can see the chart directly.
 
 ## Notes for the Agent
 

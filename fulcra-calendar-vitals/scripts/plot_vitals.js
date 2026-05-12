@@ -1,14 +1,18 @@
 const fs = require('fs');
 const asciichart = require('asciichart');
 
-// Run the bash script to get live data for testing
-const { execSync } = require('child_process');
+const dataFile = process.argv[2];
+if (!dataFile) {
+    console.error("Usage: node plot_vitals.js <path_to_json_file>");
+    process.exit(1);
+}
 
-console.log("Fetching calendar and heart rate data...");
-// To keep the test fast, let's just grab the last 1 day.
-execSync('./skills/fulcra-calendar-vitals/scripts/align.sh "1 day" > test_output.json');
+if (!fs.existsSync(dataFile)) {
+    console.error(`File not found: ${dataFile}`);
+    process.exit(1);
+}
 
-const rawData = fs.readFileSync('test_output.json', 'utf-8');
+const rawData = fs.readFileSync(dataFile, 'utf-8');
 let events;
 try {
     events = JSON.parse(rawData);
@@ -37,7 +41,6 @@ events.forEach(event => {
     }
 
     // Extract valid heart rate values
-    // `mean_heart_rate` might be null if there was no reading for that exact second
     const hrValues = event.heart_rate_series
         .map(pt => pt.mean_heart_rate)
         .filter(val => val !== null);
@@ -55,7 +58,7 @@ events.forEach(event => {
     console.log(`❤️  Avg: ${avg} bpm | Min: ${min} bpm | Max: ${max} bpm\n`);
 
     // asciichart struggles if the array is way too large for terminal width.
-    // Let's sample it down to ~80 data points if it's huge.
+    // Sample it down to ~80 data points if it's huge.
     let plotData = hrValues;
     const MAX_POINTS = 80;
     if (hrValues.length > MAX_POINTS) {
@@ -71,4 +74,3 @@ events.forEach(event => {
     console.log(asciichart.plot(plotData, config));
     console.log("\n");
 });
-
