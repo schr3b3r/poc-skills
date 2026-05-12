@@ -58,6 +58,21 @@ By default, running it with no arguments will sync `/home/leif/.openclaw/workspa
 ./scripts/upload_memory.sh "/home/leif/.openclaw/workspace/MEMORY.md" "/custom-folder"
 ```
 
+## Initialization (For New Users)
+
+Before an agent can push or pull memory state, the folder structure must exist in the user's Fulcra account. 
+Since cloud storage systems (like Google Cloud Storage) don't have explicit `mkdir` endpoints, we initialize the structure by uploading 0-byte `.keep` placeholder files into the desired paths.
+
+You can use the `init_folders.sh` script to instantly scaffold this structure for a brand new user:
+
+```bash
+# Initialize the default structure at /agent-memory
+./scripts/init_folders.sh
+
+# Or initialize it at a custom path
+./scripts/init_folders.sh "/custom-memory-folder"
+```
+
 ## Automated Syncing and Retrieval
 
 To make life as frictionless as possible for agents, we recommend using the automated sync scripts to maintain a clear folder structure:
