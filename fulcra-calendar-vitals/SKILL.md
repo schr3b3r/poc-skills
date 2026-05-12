@@ -13,11 +13,16 @@ This skill relies heavily on the `fulcra` skill. Before using this skill, ensure
 
 ## Usage
 
-Use the bundled script `scripts/align.sh` to fetch and align the data. It outputs a combined JSON array of calendar events, each containing a `heart_rate_series` property. It intelligently adjusts the sample rate (1s for standard events, 30min for all-day events) to prevent overloading the system.
+Use the bundled script `scripts/align.sh` to fetch and align the data. It outputs a combined JSON array of calendar events, each containing a `heart_rate_series` property. 
+
+By default, the script **ignores all-day events**. To include them, you must pass `"true"` as the second argument. It intelligently adjusts the sample rate (1s for standard events, 30min for all-day events) to prevent overloading the system.
 
 ```bash
-# Execute the alignment script for a specific time range (defaults to "1 day")
+# Default: Fetch the last 1 day, EXCLUDING all-day events
 ./scripts/align.sh "1 day" > combined_data.json
+
+# Fetch the last 1 week, INCLUDING all-day events
+./scripts/align.sh "1 week" "true" > combined_data.json
 ```
 
 ## ASCII Visualizations

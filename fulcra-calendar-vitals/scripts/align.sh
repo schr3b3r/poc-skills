@@ -2,7 +2,9 @@
 # scripts/align.sh
 
 TIME_RANGE=${1:-"1 day"}
-echo "Fetching calendar events for range: $TIME_RANGE" >&2
+INCLUDE_ALL_DAY=${2:-"false"}
+
+echo "Fetching calendar events for range: $TIME_RANGE (Include All-Day: $INCLUDE_ALL_DAY)" >&2
 
 EVENTS_JSONL=$(uv tool run 'git+https://github.com/fulcradynamics/fulcra-api-python.git@add-cli' calendar-events "$TIME_RANGE")
 
@@ -13,6 +15,13 @@ TMP_DIR=$(mktemp -d)
 while read -r EVENT; do
     [ -z "$EVENT" ] && continue
 
+    IS_ALL_DAY=$(echo "$EVENT" | jq -r '.is_all_day')
+    
+    # Skip all-day events unless explicitly requested
+    if [ "$IS_ALL_DAY" == "true" ] && [ "$INCLUDE_ALL_DAY" != "true" ]; then
+        continue
+    fi
+
     if [ "$FIRST" = true ]; then
         FIRST=false
     else
@@ -21,9 +30,7 @@ while read -r EVENT; do
 
     START=$(echo "$EVENT" | jq -r '.start_date')
     END=$(echo "$EVENT" | jq -r '.end_date')
-    IS_ALL_DAY=$(echo "$EVENT" | jq -r '.is_all_day')
 
-    # Default sample rate is 1s, but 30 minutes (1800s) for all-day events
     SAMPLE_RATE=1
     if [ "$IS_ALL_DAY" == "true" ]; then
         SAMPLE_RATE=1800
