@@ -54,9 +54,37 @@ You can use the bundled `scripts/upload_memory.sh` script to automate this entir
 By default, running it with no arguments will sync `/home/leif/.openclaw/workspace/MEMORY.md` to the `/agent-memory` folder on Fulcra.
 
 ```bash
-# Upload default MEMORY.md to /agent-memory
-./scripts/upload_memory.sh
+# Upload default MEMORY.md to a custom folder
+./scripts/upload_memory.sh "/home/leif/.openclaw/workspace/MEMORY.md" "/custom-folder"
+```
 
-# Upload a specific file to a specific folder
-./scripts/upload_memory.sh "/path/to/local/file.json" "/custom-folder"
+## Automated Syncing and Retrieval
+
+To make life as frictionless as possible for agents, we recommend using the automated sync scripts to maintain a clear folder structure:
+
+```text
+/agent-memory
+├── latest/
+│   └── MEMORY.md          (Always the most up-to-date state)
+└── backups/
+    ├── 20260512T215631Z/  (Immutable historical snapshots)
+    │   └── MEMORY.md
+    └── 20260513T000000Z/
+        └── MEMORY.md
+```
+
+### Backing Up (Push)
+
+To automatically upload a timestamped snapshot to `backups/` **and** overwrite the `latest/` pointer in one command:
+
+```bash
+./scripts/sync_state.sh "/home/leif/.openclaw/workspace/MEMORY.md"
+```
+
+### Restoring (Pull)
+
+If an agent wakes up fresh and needs to load the most recent `MEMORY.md` state from Fulcra down to its local workspace:
+
+```bash
+./scripts/pull_latest.sh "/home/leif/.openclaw/workspace/MEMORY.md"
 ```
