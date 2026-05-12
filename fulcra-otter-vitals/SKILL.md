@@ -1,11 +1,11 @@
 ---
-name: fulcra-meeting-vitals
-description: Cross-reference and align a meeting transcript (.txt) with a user's heart rate time series during that meeting. Uses an Otter.ai style text transcript and the JSON output from `fulcra-calendar-vitals`.
+name: fulcra-otter-vitals
+description: Cross-reference and align an Otter.ai meeting transcript (.txt) with a user's heart rate time series during that meeting. Uses an Otter.ai style text transcript and the JSON output from `fulcra-calendar-vitals`.
 ---
 
-# Fulcra Meeting Vitals
+# Fulcra Otter Vitals
 
-This skill maps physical meeting transcripts (like those exported from Zoom or Otter.ai) directly to the exact second-by-second heart rate time series of the user. It allows the user to see exactly what was being said in a meeting at the exact moment their heart rate spiked or dropped.
+This skill maps physical meeting transcripts exported from Otter.ai directly to the exact second-by-second heart rate time series of the user. It allows the user to see exactly what was being said in a meeting at the exact moment their heart rate spiked or dropped.
 
 ## Prerequisites
 
