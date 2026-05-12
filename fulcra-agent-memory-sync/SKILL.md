@@ -26,24 +26,25 @@ Here is the exact underlying logic:
 ```bash
 # Get the bearer token
 TOKEN=$(uv tool run 'git+https://github.com/fulcradynamics/fulcra-api-python.git@add-cli' auth print-access-token)
+CONTENT_LENGTH=$(stat -c%s "/home/leif/.openclaw/workspace/MEMORY.md")
 
 # Step 1: Request Upload URL
 RESPONSE=$(curl -s -X POST "https://api.fulcradynamics.com/input/v1/file_upload" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{
-    "content_length": 399,
-    "content_type": "text/markdown",
-    "name": "MEMORY.md",
-    "path": "/agent-memory"
-  }')
+  -d "{
+    \"content_length\": $CONTENT_LENGTH,
+    \"content_type\": \"text/markdown\",
+    \"name\": \"MEMORY.md\",
+    \"path\": \"/agent-memory\"
+  }")
 
 UPLOAD_URL=$(echo "$RESPONSE" | jq -r '.url')
 
 # Step 2: Upload Data
 curl -s -X PUT "$UPLOAD_URL" \
   -H "Content-Type: text/markdown" \
-  -H "Content-Length: 399" \
+  -H "Content-Length: $CONTENT_LENGTH" \
   --data-binary "@/home/leif/.openclaw/workspace/MEMORY.md"
 ```
 
