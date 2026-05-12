@@ -1,3 +1,4 @@
+const { execSync } = require('child_process');
 const fs = require('fs');
 const asciichart = require('asciichart');
 
@@ -26,17 +27,40 @@ if (!events || events.length === 0) {
     process.exit(0);
 }
 
+
+function getUserTimezone() {
+    try {
+        const output = execSync(`uv tool run 'git+https://github.com/fulcradynamics/fulcra-api-python.git@add-cli' user-info`).toString();
+        const data = JSON.parse(output);
+        return data.preferences.timezone || 'UTC';
+    } catch (e) {
+        return 'UTC';
+    }
+}
+const timezone = getUserTimezone();
+
+
 events.forEach(event => {
-    // Duration annotations store their human-readable name in metadata.name
-    // and their timestamps in recorded_at
     const title = (event.metadata && event.metadata.name) ? event.metadata.name : 'Unknown Annotation';
     
     let startStr = "Unknown";
     let endStr = "Unknown";
     
     if (event.recorded_at) {
-        if (event.recorded_at.start_time) startStr = new Date(event.recorded_at.start_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        if (event.recorded_at.end_time) endStr = new Date(event.recorded_at.end_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        if (event.recorded_at.start_time) {
+            startStr = new Date(event.recorded_at.start_time).toLocaleTimeString('en-US', {
+                timeZone: timezone,
+                hour: '2-digit', 
+                minute:'2-digit'
+            });
+        }
+        if (event.recorded_at.end_time) {
+            endStr = new Date(event.recorded_at.end_time).toLocaleTimeString('en-US', {
+                timeZone: timezone,
+                hour: '2-digit', 
+                minute:'2-digit'
+            });
+        }
     }
     
     console.log(`\n=========================================================`);

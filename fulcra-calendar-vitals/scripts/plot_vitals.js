@@ -1,3 +1,4 @@
+const { execSync } = require('child_process');
 const fs = require('fs');
 const asciichart = require('asciichart');
 
@@ -26,10 +27,23 @@ if (!events || events.length === 0) {
     process.exit(0);
 }
 
+
+function getUserTimezone() {
+    try {
+        const output = execSync(`uv tool run 'git+https://github.com/fulcradynamics/fulcra-api-python.git@add-cli' user-info`).toString();
+        const data = JSON.parse(output);
+        return data.preferences.timezone || 'UTC';
+    } catch (e) {
+        return 'UTC';
+    }
+}
+const timezone = getUserTimezone();
+
+
 events.forEach(event => {
     const title = event.title || 'Untitled Meeting';
-    const start = new Date(event.start_date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-    const end = new Date(event.end_date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    const start = new Date(event.start_date).toLocaleTimeString('en-US', { timeZone: timezone, hour: '2-digit', minute:'2-digit' });
+    const end = new Date(event.end_date).toLocaleTimeString('en-US', { timeZone: timezone, hour: '2-digit', minute:'2-digit' });
     
     console.log(`\n=========================================================`);
     console.log(`📅 ${title} (${start} - ${end})`);

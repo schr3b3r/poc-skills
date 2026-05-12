@@ -1,3 +1,4 @@
+const { execSync } = require('child_process');
 const fs = require('fs');
 
 // Ensure we don't crash if asciichart isn't installed. We can fallback to simple text output.
@@ -96,8 +97,22 @@ const avg = Math.round(hrValues.reduce((a,b) => a+b, 0) / hrValues.length);
 const max = Math.round(Math.max(...hrValues));
 const min = Math.round(Math.min(...hrValues));
 
+
+function getUserTimezone() {
+    try {
+        const output = execSync(`uv tool run 'git+https://github.com/fulcradynamics/fulcra-api-python.git@add-cli' user-info`).toString();
+        const data = JSON.parse(output);
+        return data.preferences.timezone || 'UTC';
+    } catch (e) {
+        return 'UTC';
+    }
+}
+const timezone = getUserTimezone();
+
+const meetingStartLocal = new Date(meeting.start_date).toLocaleTimeString('en-US', { timeZone: timezone, hour: '2-digit', minute:'2-digit' });
+
 console.log(`\n=========================================================`);
-console.log(`📅 ${meeting.title} (${meeting.start_date})`);
+console.log(`📅 ${meeting.title} (${meetingStartLocal})`);
 console.log(`=========================================================`);
 console.log(`❤️  Avg: ${avg} bpm | Min: ${min} bpm | Max: ${max} bpm\n`);
 
