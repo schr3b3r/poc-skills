@@ -1,6 +1,6 @@
 ---
 name: fulcra-calendar-vitals
-description: Correlate Fulcra calendar events with high-resolution heart rate time series data. Use when a builder or user wants to visualize, align, or aggregate their heart rate data alongside their calendar schedule (e.g., meetings, focus time) using the Fulcra CLI. Helps generate combined JSON data for dashboard creation.
+description: Correlate Fulcra calendar events with high-resolution heart rate time series data. Trigger this skill whenever a user asks something like "Hey, show me my heart rate based on my meetings today using Fulcra" or wants to visualize their vitals against their schedule. Helps generate combined JSON data for dashboard creation.
 ---
 
 # Fulcra Calendar Vitals
