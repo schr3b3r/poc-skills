@@ -7,6 +7,10 @@ description: Correlate Fulcra calendar events with high-resolution heart rate ti
 
 This skill correlates Apple Calendar events with Fulcra HeartRate metric time series data. It uses the Fulcra CLI to fetch calendar events and overlays 1-second granular heart rate data for each event's time window.
 
+## Prerequisites
+
+This skill relies heavily on the `fulcra` skill. Before using this skill, ensure the user is authenticated with the Fulcra CLI. If you receive authentication errors, refer to the `fulcra` skill documentation to log the user in via `auth login`.
+
 ## Usage
 
 Use the bundled script `scripts/align.sh` to fetch and align the data. It outputs a combined JSON array of calendar events, each containing a `heart_rate_series` property. It intelligently adjusts the sample rate (1s for standard events, 30min for all-day events) to prevent overloading the system.
