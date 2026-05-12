@@ -16,7 +16,13 @@ while read -r EVENT; do
     [ -z "$EVENT" ] && continue
 
     IS_ALL_DAY=$(echo "$EVENT" | jq -r '.is_all_day')
+    DELETED_AT=$(echo "$EVENT" | jq -r '.deleted_at // empty')
     
+    # Skip deleted events
+    if [ -n "$DELETED_AT" ] && [ "$DELETED_AT" != "null" ]; then
+        continue
+    fi
+
     # Skip all-day events unless explicitly requested
     if [ "$IS_ALL_DAY" == "true" ] && [ "$INCLUDE_ALL_DAY" != "true" ]; then
         continue
