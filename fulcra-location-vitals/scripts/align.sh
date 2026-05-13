@@ -44,11 +44,10 @@ echo "$LOCATIONS_JSON" | jq -c '.[]' | while read -r LOC; do
         END=$NOW
     fi
 
-    # Fetch all heart rate records during this location stay and calculate the mean
-    # We use get-records to grab raw values and jq to average them
-    uv tool run 'git+https://github.com/fulcradynamics/fulcra-api-python.git@add-cli' get-records HeartRate "$START" "$END" 2>/dev/null > "$TMP_DIR/hr_raw.jsonl"
-    
-    AVG_HR=$(cat "$TMP_DIR/hr_raw.jsonl" | jq -s '[.[] | .value] | if length > 0 then add/length else null end')
+    # Fetch all heart rate time series samples during this location stay
+    # We use metric-time-series with mean aggregation (which handles multiple data sources)
+    # and then calculate the overall average for the stay in jq
+    AVG_HR=$(uv tool run 'git+https://github.com/fulcradynamics/fulcra-api-python.git@add-cli' metric-time-series --agg-function mean HeartRate "$START" "$END" 2>/dev/null | jq -s '[.[] | .mean_heart_rate] | map(select(. != null)) | if length > 0 then add/length else null end')
 
     # Add the average heart rate to the location JSON object
     echo "$LOC" | jq --argjson hr "$AVG_HR" '. + {average_heart_rate: $hr, end_time: "'"$END"'"}'
