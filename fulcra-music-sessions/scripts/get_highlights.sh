@@ -30,7 +30,7 @@ if [ -z "$DURATION_MS" ]; then
     exit 1
 fi
 
-DURATION_SEC=$(echo "scale=3; $DURATION_MS / 1000" | bc)
+DURATION_SEC=$(awk "BEGIN {print $DURATION_MS / 1000}")
 END_UTC_RAW=$(date -d "$START_UTC_RAW + $DURATION_SEC seconds" -u +"%Y-%m-%dT%H:%M:%SZ")
 
 echo "Session Start: $START_UTC_RAW"
