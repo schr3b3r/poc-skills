@@ -3,9 +3,10 @@
 
 AUDIO_FILE="$1"
 ANNOTATION_OFFSET="$2"
+ANNOTATION_NAME="${3:-Jam Session Highlight}"
 
 if [ -z "$AUDIO_FILE" ] || [ -z "$ANNOTATION_OFFSET" ]; then
-    echo "Usage: ./render_waveform.sh /path/to/audio/file.m4a <annotation_offset_in_seconds>"
+    echo "Usage: ./render_waveform.sh /path/to/audio/file.m4a <annotation_offset_in_seconds> [\"Annotation Name\"]"
     exit 1
 fi
 
@@ -40,6 +41,7 @@ import asciichartpy
 
 audio_path = sys.argv[1]
 annotation_offset = float(sys.argv[2])
+annotation_name = sys.argv[3]
 
 try:
     with wave.open(audio_path, 'rb') as wf:
@@ -56,6 +58,7 @@ try:
         samples_per_bucket = num_samples // W
         
         amplitudes = []
+        neg_amplitudes = []
         for i in range(W):
             start = i * samples_per_bucket
             end = start + samples_per_bucket
@@ -68,6 +71,7 @@ try:
             else:
                 amp = 0
             amplitudes.append(amp)
+            neg_amplitudes.append(-amp)
             
 except Exception as e:
     print("Error:", e)
@@ -77,20 +81,20 @@ config = {
     'height': 12,
     'format': '{:8.0f}'
 }
-print(asciichartpy.plot(amplitudes, config))
+print(asciichartpy.plot([amplitudes, neg_amplitudes], config))
 
 marker_index = int((annotation_offset / duration_sec) * W)
 if marker_index >= W:
     marker_index = W - 1
 
 margin = 11
-marker_line = " " * margin + " " * marker_index + f"▲ ({int(annotation_offset)}s)"
+marker_line = " " * margin + " " * marker_index + f"▲ {annotation_name} ({int(annotation_offset)}s)"
 print(marker_line)
 PYEOF
 
 echo ""
 echo "--- Audio Waveform for $(basename "$AUDIO_FILE") ---"
-"$VENV_DIR/bin/python" /tmp/render_waveform.py "$WAV_TMP" "$ANNOTATION_OFFSET"
+"$VENV_DIR/bin/python" /tmp/render_waveform.py "$WAV_TMP" "$ANNOTATION_OFFSET" "$ANNOTATION_NAME"
 echo "---------------------------------------------------------------------------------"
 
 rm -f "$WAV_TMP"
