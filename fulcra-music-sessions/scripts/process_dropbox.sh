@@ -46,6 +46,10 @@ echo "$AUDIO_FILES" | while read -r file_obj; do
     # Clean the filename spaces and weird chars
     CLEAN_FILENAME=$(echo "$FILENAME_NO_EXT" | sed -e 's/[^A-Za-z0-9_-]/_/g')".$EXTENSION"
     
+    # Rename the local file so upload_memory.sh picks up the clean basename
+    mv "$DOWNLOAD_PATH" "$TMP_DIR/$CLEAN_FILENAME"
+    DOWNLOAD_PATH="$TMP_DIR/$CLEAN_FILENAME"
+    
     # Determine media type based on extension
     MEDIA_TYPE="audio"
     case "${EXTENSION,,}" in
