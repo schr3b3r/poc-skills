@@ -46,7 +46,22 @@ echo "$AUDIO_FILES" | while read -r file_obj; do
     # Clean the filename spaces and weird chars
     CLEAN_FILENAME=$(echo "$FILENAME_NO_EXT" | sed -e 's/[^A-Za-z0-9_-]/_/g')".$EXTENSION"
     
-    DEST_PATH="/music-writing-sessions/audio/$TIMESTAMP_FOLDER"
+    # Determine media type based on extension
+    MEDIA_TYPE="audio"
+    case "${EXTENSION,,}" in
+        mp4|mov|avi|mkv|webm|m4v)
+            MEDIA_TYPE="video"
+            ;;
+        mp3|wav|m4a|flac|aac|ogg)
+            MEDIA_TYPE="audio"
+            ;;
+        *)
+            echo "Warning: Unrecognized extension .$EXTENSION. Defaulting to audio."
+            MEDIA_TYPE="audio"
+            ;;
+    esac
+    
+    DEST_PATH="/music-writing-sessions/$MEDIA_TYPE/$TIMESTAMP_FOLDER"
     
     echo "Uploading $CLEAN_FILENAME to $DEST_PATH..."
     ~/.openclaw/workspace/poc-skills/fulcra-agent-memory-sync/scripts/upload_memory.sh "$DOWNLOAD_PATH" "$DEST_PATH"
