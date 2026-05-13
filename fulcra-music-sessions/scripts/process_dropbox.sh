@@ -32,15 +32,19 @@ echo "$AUDIO_FILES" | while read -r file_obj; do
     EXTENSION="${BASENAME##*.}"
     FILENAME_NO_EXT="${BASENAME%.*}"
     
-    # Ideally, we want the start time of the session.
-    # If the file name doesn't contain a date, we will fall back to using the upload timestamp 
-    # to create the timestamped folder. We can parse creation time: 
-    # "2026-05-13T14:04:29.38437Z" -> "20260513T140429Z"
-    TIMESTAMP_FOLDER=$(date -d "$FILE_CREATED" -u +"%Y%m%dT%H%M%SZ" 2>/dev/null)
+    # Extract actual embedded creation date using exiftool if available
+    EMBEDDED_DATE=$(exiftool -s -s -s -d "%Y%m%dT%H%M%SZ" -CreateDate "$DOWNLOAD_PATH" 2>/dev/null)
     
-    # Fallback if date parsing fails (e.g., macos date command limitations)
-    if [ -z "$TIMESTAMP_FOLDER" ]; then
-        TIMESTAMP_FOLDER=$(echo "$FILE_CREATED" | sed -e 's/[-:]//g' -e 's/\..*Z/Z/')
+    if [ -n "$EMBEDDED_DATE" ]; then
+        TIMESTAMP_FOLDER="$EMBEDDED_DATE"
+        echo "Found embedded creation date: $TIMESTAMP_FOLDER"
+    else
+        # Fallback to upload timestamp
+        TIMESTAMP_FOLDER=$(date -d "$FILE_CREATED" -u +"%Y%m%dT%H%M%SZ" 2>/dev/null)
+        if [ -z "$TIMESTAMP_FOLDER" ]; then
+            TIMESTAMP_FOLDER=$(echo "$FILE_CREATED" | sed -e 's/[-:]//g' -e 's/\..*Z/Z/')
+        fi
+        echo "No embedded date found, using upload date: $TIMESTAMP_FOLDER"
     fi
 
     # Clean the filename spaces and weird chars
