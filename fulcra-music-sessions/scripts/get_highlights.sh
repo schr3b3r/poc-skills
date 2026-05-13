@@ -44,6 +44,41 @@ if [ -z "$HIGHLIGHTS" ] || [ "$HIGHLIGHTS" == "[]" ] || echo "$HIGHLIGHTS" | gre
     echo "No highlights found during this session."
 else
     echo "Highlights Found:"
-    # We can just output the raw JSON for now, or use Python to safely parse and calculate offsets
-    echo "$HIGHLIGHTS" | jq .
+    # Use python to safely parse the JSON array and calculate the exact second offsets
+    python3 -c "
+import sys, json
+from datetime import datetime, timezone
+
+raw_json = sys.stdin.read().strip()
+if not raw_json:
+    sys.exit(0)
+
+highlights = json.loads(raw_json)
+
+# If the API returned a single object instead of an array, wrap it
+if isinstance(highlights, dict):
+    highlights = [highlights]
+
+start_time_str = '$START_UTC_RAW'
+start_dt = datetime.strptime(start_time_str, '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=timezone.utc)
+
+for h in highlights:
+    record_time_str = h.get('recorded_at')
+    if not record_time_str: continue
+    try:
+        if record_time_str.endswith('Z'):
+            record_dt = datetime.strptime(record_time_str, '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=timezone.utc)
+        else:
+            record_dt = datetime.fromisoformat(record_time_str)
+            
+        offset_seconds = int((record_dt - start_dt).total_seconds())
+        
+        # Calculate human readable mm:ss
+        m, s = divmod(offset_seconds, 60)
+        time_format = f\"{m:02d}:{s:02d}\"
+        
+        print(f\" - Marker at: [{time_format}] ({offset_seconds}s into the track)\")
+    except Exception as e:
+        print(f\" - Marker at: {record_time_str} | Offset Error: {e}\")
+    " <<< "$HIGHLIGHTS"
 fi
