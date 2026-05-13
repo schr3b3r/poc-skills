@@ -9,21 +9,22 @@ This skill maps physical meeting transcripts exported from Otter.ai directly to 
 
 ## Prerequisites
 
-1. The user must provide a meeting transcript in `.txt` format (which contains timestamped utterances like `John Doe 12:34`).
+1. The user must upload their `.txt` meeting transcript to the Fulcra file system at `/meeting-transcripts/otter/<timestamp>/`. (The script will automatically detect the most recent upload in this folder).
 2. The user must have already generated a `combined_data.json` file using the `fulcra-calendar-vitals` skill, which contains their calendar events merged with their high-resolution heart rate data.
 
 ## Usage
 
-Use the bundled `scripts/align_transcript.js` script to process the data and generate the output. 
+Use the bundled `scripts/fetch_and_align.sh` script to process the data and generate the output. 
 
-You must pass three arguments to the script:
-1. The path to the transcript `.txt` file.
-2. The path to the `combined_data.json` file.
-3. The exact title of the meeting as it appears in the calendar data.
+You must pass two arguments to the script:
+1. The path to the `combined_data.json` file.
+2. The exact title of the meeting as it appears in the calendar data.
 
 ```bash
-node scripts/align_transcript.js path/to/transcript.txt path/to/combined_data.json "My Weekly Sync"
+./scripts/fetch_and_align.sh path/to/combined_data.json "My Weekly Sync"
 ```
+
+Under the hood, this script connects to the Fulcra API, retrieves the most recent transcript from the `/meeting-transcripts/otter` folder, and aligns it with the local calendar and heart rate data using `align_transcript.js`.
 
 ## Output
 

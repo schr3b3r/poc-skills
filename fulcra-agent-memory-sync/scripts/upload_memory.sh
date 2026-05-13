@@ -32,18 +32,42 @@ fi
 
 echo "Requesting pre-signed upload URL for $UPLOAD_PATH/$FILE_NAME..."
 # 1. Get the upload URL
-RESPONSE=$(curl -s -X POST "https://api.fulcradynamics.com/input/v1/file_upload" \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d "{
+REQUEST_JSON="{
     \"content_length\": $CONTENT_LENGTH,
     \"content_type\": \"$CONTENT_TYPE\",
     \"name\": \"$FILE_NAME\",
     \"path\": \"$UPLOAD_PATH\"
-  }")
+  }"
+
+RESPONSE=$(curl -s -X POST "https://api.fulcradynamics.com/input/v1/file_upload" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "$REQUEST_JSON")
 
 # Extract the URL
 UPLOAD_URL=$(echo "$RESPONSE" | jq -r '.url // .upload_url // empty')
+
+# Handle 409 Conflict by deleting the existing file
+if [ -z "$UPLOAD_URL" ]; then
+    STATUS=$(echo "$RESPONSE" | jq -r '.status // empty')
+    if [ "$STATUS" == "409" ]; then
+        echo "File already exists. Deleting the existing file to overwrite..."
+        FILE_JSON=$(curl -s -H "Authorization: Bearer $TOKEN" "https://api.fulcradynamics.com/input/v1/file_upload?path=$UPLOAD_PATH" | jq -r ".files[] | select(.name == \"$FILE_NAME\")")
+        INPUT_ID=$(echo "$FILE_JSON" | jq -r '.id // empty')
+        
+        if [ -n "$INPUT_ID" ]; then
+            # Delete the file
+            curl -s -X DELETE -H "Authorization: Bearer $TOKEN" "https://api.fulcradynamics.com/input/v1/file_upload/$INPUT_ID"
+            
+            # Retry POST
+            RESPONSE=$(curl -s -X POST "https://api.fulcradynamics.com/input/v1/file_upload" \
+              -H "Authorization: Bearer $TOKEN" \
+              -H "Content-Type: application/json" \
+              -d "$REQUEST_JSON")
+            UPLOAD_URL=$(echo "$RESPONSE" | jq -r '.url // .upload_url // empty')
+        fi
+    fi
+fi
 
 if [ -z "$UPLOAD_URL" ]; then
     echo "Failed to get upload URL. API Response:"
