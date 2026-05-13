@@ -4,8 +4,8 @@
 echo "Fetching Fulcra access token..."
 TOKEN=$(uv tool run 'git+https://github.com/fulcradynamics/fulcra-api-python.git@add-cli' auth print-access-token)
 
-# 1. List files in /music-writing-sessions/dropbox
-FILES_JSON=$(curl -s -H "Authorization: Bearer $TOKEN" "https://api.fulcradynamics.com/input/v1/file_upload?path=/music-writing-sessions/dropbox")
+# 1. List files in /music-writing-sessions/_dropbox
+FILES_JSON=$(curl -s -H "Authorization: Bearer $TOKEN" "https://api.fulcradynamics.com/input/v1/file_upload?path=/music-writing-sessions/_dropbox")
 
 # We want to process audio files (.mp3, .wav, .m4a, etc). Ignoring .keep
 AUDIO_FILES=$(echo "$FILES_JSON" | jq -c '.files[] | select(.name != ".keep")')
