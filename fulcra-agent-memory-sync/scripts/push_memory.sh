@@ -4,7 +4,9 @@
 
 WORKSPACE="/home/leif/.openclaw/workspace"
 ARCHIVE_PATH="/tmp/memory_archive.tar.gz"
-BASE_DIR="$(dirname "$0")"
+
+# Get absolute path to the directory containing this script
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
 
 cd "$WORKSPACE" || exit 1
 
@@ -15,8 +17,6 @@ if [ ! -f "MEMORY.md" ] && [ ! -d "memory" ]; then
 fi
 
 echo "Creating memory archive..."
-# Create a tarball containing MEMORY.md and the memory directory
-# Using a glob to avoid errors if one doesn't exist, but we ensure at least one exists above
 FILES_TO_TAR=""
 [ -f "MEMORY.md" ] && FILES_TO_TAR="MEMORY.md"
 [ -d "memory" ] && FILES_TO_TAR="$FILES_TO_TAR memory/"
@@ -26,10 +26,10 @@ tar -czf "$ARCHIVE_PATH" $FILES_TO_TAR
 TIMESTAMP=$(date -u +"%Y%m%dT%H%M%SZ")
 
 echo "1. Uploading timestamped backup..."
-"$BASE_DIR/upload_memory.sh" "$ARCHIVE_PATH" "/agent-memory/backups/$TIMESTAMP"
+"$SCRIPT_DIR/upload_memory.sh" "$ARCHIVE_PATH" "/agent-memory/backups/$TIMESTAMP"
 
 echo "2. Updating latest state..."
-"$BASE_DIR/upload_memory.sh" "$ARCHIVE_PATH" "/agent-memory/latest"
+"$SCRIPT_DIR/upload_memory.sh" "$ARCHIVE_PATH" "/agent-memory/latest"
 
 echo "Push complete! Archive uploaded to Fulcra."
 rm -f "$ARCHIVE_PATH"

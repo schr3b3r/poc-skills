@@ -1,7 +1,6 @@
 #!/bin/bash
 # scripts/upload_memory.sh
 
-# Defaults to the agent's MEMORY.md if no argument is provided
 FILE_PATH=${1:-"/home/leif/.openclaw/workspace/MEMORY.md"}
 UPLOAD_PATH=${2:-"/agent-memory"}
 FILE_NAME=$(basename "$FILE_PATH")
@@ -11,13 +10,20 @@ if [ ! -f "$FILE_PATH" ]; then
     exit 1
 fi
 
-# Detect content type (default to text/markdown for MEMORY.md, or generic binary)
+# Detect content type
 if [[ "$FILE_NAME" == *.md ]]; then
     CONTENT_TYPE="text/markdown"
 elif [[ "$FILE_NAME" == *.json ]]; then
     CONTENT_TYPE="application/json"
+elif [[ "$FILE_NAME" == *.tar.gz ]]; then
+    CONTENT_TYPE="application/gzip"
 else
-    CONTENT_TYPE=$(file -b --mime-type "$FILE_PATH")
+    # Fallback if `file` isn't installed
+    if command -v file >/dev/null 2>&1; then
+        CONTENT_TYPE=$(file -b --mime-type "$FILE_PATH")
+    else
+        CONTENT_TYPE="application/octet-stream"
+    fi
 fi
 
 CONTENT_LENGTH=$(stat -c%s "$FILE_PATH")
