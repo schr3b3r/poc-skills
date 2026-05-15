@@ -29,9 +29,10 @@ As part of this skill, after the dashboard is scaffolded, **you MUST prompt the 
 
 ## Workflow
 
-1. **Scaffold:** The script initializes a new SvelteKit project (using the standard Svelte template) and installs necessary dependencies (e.g., Chart.js for visualizations).
-2. **Data Ingestion:** Once set up, instruct the user (or automate it yourself) to copy the generated `combined_data.json` or other JSON outputs from the `*-vitals` skills into the new dashboard's `src/lib/data` or `static/data` folder.
-3. **Run:** Start the dev server.
+1. **Scaffold:** The script copies a clean, un-styled SvelteKit dashboard template (which includes the OpenClaw Control UI embed and D3 timeline components) and installs dependencies.
+2. **Theming (Agent Task):** Because the scaffolded dashboard is deliberately un-styled, you should immediately ask the user what sort of "theme" or "vibe" they want for their dashboard (e.g., minimalist dark mode, cyberpunk, a swamp, a space station). Once they decide, directly edit `src/routes/+page.svelte` and `src/routes/D3Timeline.svelte` to apply CSS that matches their requested theme!
+3. **Data Ingestion:** Instruct the user (or automate it yourself) to copy the generated `combined_data.json` or other JSON outputs from the `*-vitals` skills into the new dashboard's `src/lib/data` or `static/data` folder.
+4. **Run:** Start the dev server.
    ```bash
    cd <target-directory>
    npm run dev
