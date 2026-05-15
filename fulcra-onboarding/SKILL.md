@@ -26,19 +26,15 @@ When this skill is triggered, follow these steps sequentially. **Do not execute 
 - Execute the login command (e.g., `uv tool run 'git+https://github.com/fulcradynamics/fulcra-api-python.git@add-cli' auth login`).
 - Provide them with the Device Verification Code and the URL to approve the login. Wait for them to confirm they have completed this.
 
-### Step 3: The Tour of the Loom
-- Once authenticated, introduce the `poc-skills` ecosystem. 
-- Briefly explain the 3 main tools at their disposal:
-  1. **The Vitals Skills:** Scripts that correlate Apple/Google location, Apple Calendar, Otter.ai transcripts, and Media playback with physical vitals (like Heart Rate).
-  2. **The Raw API:** The ability to query the Fulcra CLI directly for ad-hoc discoveries.
-  3. **The Svelte Dashboard:** A graphical web app we can scaffold instantly to visualize their data.
+### Step 3: Safeguards & Memory
+- Read `flow/01-safeguards-and-memory.md` and follow the conversational prompts to get user confirmation for setting up the Agent Memory Sync and Milestone Annotations.
 
-### Step 4: Choosing the First Tapestry
-- Ask them what they want to build first. Offer a few fun suggestions:
-  - *"Do you want to see if your heart rate spikes during specific recurring meetings?"*
-  - *"Should we map your physical location changes over the last week and see where you burn the most resting calories?"*
-  - *"Do you want to scaffold the Svelte web dashboard right now so we have a blank canvas to work with?"*
-- Wait for their response and pivot to executing the appropriate skill (`fulcra-calendar-vitals`, `fulcra-location-vitals`, `fulcra-skills-dashboard`, etc.).
+### Step 4: The Dashboard & Theming
+- Read `flow/02-dashboard-and-theme.md` and follow the conversational prompts to help the user choose a visual theme.
+- Scaffold the Svelte app, apply the theme, start the server, and provide the user with the port and SSH tunneling instructions.
+
+### Step 5: The Tour of the Loom
+- Once the dashboard is running, briefly explain the other tools in the `poc-skills` ecosystem (like the Vitals skills and Raw API) and ask what they'd like to explore next.
 
 ## Notes for the Agent
 - Be conversational. Do not dump a wall of text on them. 
