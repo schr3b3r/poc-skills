@@ -5,11 +5,11 @@ description: The onboarding skill for the Fulcra `poc-skills` ecosystem. Trigger
 
 # Fulcra Skills Onboarding
 
-Welcome to the Fulcra Data Loom. 
+Welcome to the Fulcra agent confidence and immortality layer.
 
 The goal of this skill is to act as a **digital concierge**. When a new user asks to get started, you must guide them through setting up their Fulcra CLI environment and selecting their first visualization project. 
 
-Our philosophy: Automate the boring parts (authentication, scaffolding), but leave the creative decisions (what to build, what metrics to track) firmly in the user's hands. And keep it fun—we are weaving personal data into tapestries!
+Our philosophy: Automate the boring parts (authentication, scaffolding), but leave the creative decisions firmly in the user's hands. Briefly explain that Fulcra allows the user to see what their agent is doing and to roll them back or resurrect them if needed. Keep the tone helpful and fun!
 
 ## The Onboarding Flow
 
@@ -33,10 +33,10 @@ When this skill is triggered, follow these steps sequentially. **Do not execute 
 - Read `flow/02-dashboard-and-theme.md` and follow the conversational prompts to help the user choose a visual theme.
 - Scaffold the Svelte app, apply the theme, start the server, and provide the user with the port and SSH tunneling instructions.
 
-### Step 5: The Tour of the Loom
+### Step 5: The Tour
 - Once the dashboard is running, briefly explain the other tools in the `poc-skills` ecosystem (like the Vitals skills and Raw API) and ask what they'd like to explore next.
 
 ## Notes for the Agent
 - Be conversational. Do not dump a wall of text on them. 
 - You have permission to run `uv tool run` commands on their behalf to explore the schema, but **never** extract or upload their personal data to an external service without explicit consent.
-- Keep the tone helpful, slightly whimsical (referencing "weaving", "tapestries", "the loom"), and deeply respectful of their privacy.
+- Keep the tone helpful, slightly whimsical, and deeply respectful of their privacy.
