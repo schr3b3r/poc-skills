@@ -24,7 +24,7 @@ Once the safety infrastructure (Memory Sync and Milestone Annotations) is confir
    - Tell them: *"Excellent choice. I am going to scaffold the Svelte app, write the custom CSS for that theme, and wire up the timeline components. This will just take me a minute or two. I will let you know as soon as it is ready!"*
 
 2. **Execute the Build (No user prompt required here, just act):**
-   - Execute the `fulcra-skills-dashboard` scaffolding script.
+   - Execute the `fulcra-skills-dashboard` scaffolding script. *Generate a unique target directory name each time so you don't collide with previous test runs (e.g., `fulcra-dashboard-<timestamp>`).*
    - Write the Svelte components (`+page.svelte`) to mock or ingest the Memory/Annotation data into a timeline.
    - Apply CSS corresponding to their chosen theme.
    - Start the Svelte dev server (`npm run dev -- --host &`).
