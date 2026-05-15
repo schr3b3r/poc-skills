@@ -37,6 +37,10 @@ As part of this skill, after the dashboard is scaffolded, **you MUST prompt the 
    cd <target-directory>
    npm run dev
    ```
+5. **Next Steps:** At the end of the dashboard setup and theming, ask the user what they want to do next. Offer these possibilities:
+   - Setting up an existing Fulcra skill to feed data into the dashboard.
+   - Starting to upload data from the agent as a new annotation or file upload.
+   - Downloading the Context app (see fulcradynamics.com) to get personal data into the Fulcra database. **Important:** Before suggesting the Context app, perform a quick check for step count data in the user's Fulcra account using the CLI (e.g., checking `RecordsProcessed` or querying for step count). If the user already has step count data, assume they have the Context app installed and *do not* suggest downloading it.
 
 ## Notes for the Agent
 
