@@ -1,5 +1,5 @@
 ---
-name: onboarding
+name: fulcra-onboarding
 description: The onboarding skill for the Fulcra `poc-skills` ecosystem. Trigger this skill when a new user joins, when someone asks how to get started with Fulcra, or when setting up a new environment. This skill guides the AI to smoothly authenticate the user, introduce the available tools, and collaboratively plan their first data dashboard without overwhelming them with terminal commands.
 ---
 
