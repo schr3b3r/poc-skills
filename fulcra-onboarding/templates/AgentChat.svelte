@@ -3,14 +3,12 @@
   // Agents: When adding this to the dashboard, inject it at the bottom of +page.svelte
   // or as a persistent overlay.
 
-  import { onMount, afterUpdate } from 'svelte';
-
-  let messages = [
+  let messages = $state([
     { role: 'assistant', text: 'I am here, watching the pond. What shall we weave into the dashboard next?' }
-  ];
-  let input = '';
-  let isTyping = false;
-  let chatWindow;
+  ]);
+  let input = $state('');
+  let isTyping = $state(false);
+  let chatWindow = $state();
 
   // The webhook URL will be automatically replaced by the agent during scaffolding
   // with their active OpenClaw listener endpoint (e.g., via the 'royal-decrees' webhook mechanism)
@@ -49,8 +47,9 @@
     }
   }
 
-  afterUpdate(() => {
-    if (chatWindow) {
+  $effect(() => {
+    // This effect automatically scrolls the chat window when messages change
+    if (chatWindow && messages) {
       chatWindow.scrollTop = chatWindow.scrollHeight;
     }
   });
