@@ -3,9 +3,7 @@
   import * as d3 from 'd3';
 
   // The raw data points to visualize on the timeline
-  export let data = []; // e.g. [{ time: "2026-05-15T10:00:00Z", label: "Milestone", details: "Scaffolded App" }]
-  export let title = "Activity Timeline";
-  export let color = "#64c466";
+  let { data = [], title = "Activity Timeline", color = "#64c466" } = $props();
 
   let container;
   let tooltip;
