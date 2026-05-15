@@ -10,9 +10,9 @@
   let isTyping = $state(false);
   let chatWindow = $state();
 
-  // The webhook URL will be automatically replaced by the agent during scaffolding
-  // with their active OpenClaw listener endpoint (e.g., via the 'royal-decrees' webhook mechanism)
-  const AGENT_WEBHOOK_URL = 'http://localhost:3000/__openclaw__/webhooks/agent-chat';
+  // The webhook URL points to the Vite proxy configured in vite.config.js,
+  // which forwards requests to the local OpenClaw gateway daemon.
+  const AGENT_WEBHOOK_URL = '/__openclaw__/webhooks/agent-chat?wait=true';
 
   // Quick suggestions for other POC skills
   const suggestedSkills = [
@@ -38,14 +38,22 @@
     try {
       const response = await fetch(AGENT_WEBHOOK_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer pondwoven'
+        },
         body: JSON.stringify({ message: userMessage })
       });
 
       if (!response.ok) throw new Error('Agent failed to respond.');
       
       const data = await response.json();
-      messages = [...messages, { role: 'assistant', text: data.reply }];
+      
+      // Since OpenClaw async webhooks return { ok: true, runId: ... } immediately when ?wait=true is omitted,
+      // or simply a success confirmation when wait=true is used without a synchronous 'reply' mapped in the HTTP body,
+      // we need a mechanism to fetch the actual text reply from the session history or assume it worked asynchronously.
+      // For this POC, we will just display a system acknowledgement if the HTTP request itself succeeded.
+      messages = [...messages, { role: 'system', text: 'Message delivered to agent. (Awaiting backend polling implementation to fetch reply).' }];
     } catch (error) {
       messages = [...messages, { role: 'system', text: 'Error: The agent could not be reached. Check the webhook connection.' }];
     } finally {
