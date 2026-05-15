@@ -26,6 +26,7 @@ Once the safety infrastructure (Memory Sync and Milestone Annotations) is confir
 2. **Execute the Build (No user prompt required here, just act):**
    - Execute the `fulcra-skills-dashboard` scaffolding script. *Generate a unique target directory name each time so you don't collide with previous test runs (e.g., `fulcra-dashboard-<timestamp>`).*
    - Write the Svelte components (`+page.svelte`) to mock or ingest the Memory/Annotation data into a timeline.
+   - **Important:** Add the `AgentChat.svelte` component (from `templates/AgentChat.svelte`) into the dashboard so the user can continue talking to you directly from the UI. Hook its webhook URL up to your active OpenClaw listener (e.g., the `royal-decrees` webhook).
    - Apply CSS corresponding to their chosen theme.
    - Start the Svelte dev server (`npm run dev -- --host &`).
 
