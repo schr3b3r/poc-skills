@@ -14,6 +14,19 @@
   // with their active OpenClaw listener endpoint (e.g., via the 'royal-decrees' webhook mechanism)
   const AGENT_WEBHOOK_URL = 'http://localhost:3000/__openclaw__/webhooks/agent-chat';
 
+  // Quick suggestions for other POC skills
+  const suggestedSkills = [
+    { id: "fulcra-calendar-vitals", name: "Calendar Vitals", icon: "📅" },
+    { id: "fulcra-location-vitals", name: "Location Vitals", icon: "🗺️" },
+    { id: "fulcra-media-vitals", name: "Media Vitals", icon: "🎵" },
+    { id: "fulcra-otter-vitals", name: "Otter Vitals", icon: "🎙️" }
+  ];
+
+  function sendSuggestion(skillId) {
+    input = `Tell me about the ${skillId} skill and help me set it up.`;
+    sendMessage();
+  }
+
   async function sendMessage() {
     if (!input.trim()) return;
 
@@ -59,6 +72,18 @@
   <div class="chat-header">
     <h3>Agent Comms</h3>
     <div class="status-indicator" class:active={!isTyping} class:typing={isTyping}></div>
+  </div>
+
+  <div class="suggestions-panel">
+    <div class="suggestions-title">Available Skills</div>
+    <div class="suggestions-grid">
+      {#each suggestedSkills as skill}
+        <button class="suggestion-btn" on:click={() => sendSuggestion(skill.id)}>
+          <span class="skill-icon">{skill.icon}</span>
+          <span class="skill-name">{skill.name}</span>
+        </button>
+      {/each}
+    </div>
   </div>
 
   <div class="chat-window" bind:this={chatWindow}>
@@ -133,6 +158,46 @@
   .status-indicator.typing { background: #e0b441; box-shadow: 0 0 8px #e0b441; animation: pulse 1s infinite; }
 
   @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+
+  .suggestions-panel {
+    padding: 0.75rem 1rem;
+    background: rgba(0,0,0,0.2);
+    border-bottom: 1px solid #5a7d65;
+  }
+
+  .suggestions-title {
+    font-size: 0.8rem;
+    color: #8ba888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.5rem;
+  }
+
+  .suggestions-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+
+  .suggestion-btn {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid #5a7d65;
+    border-radius: 6px;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #c4d9c6;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    text-align: left;
+  }
+
+  .suggestion-btn:hover {
+    background: rgba(255,255,255,0.1);
+    transform: translateY(-1px);
+  }
 
   .chat-window {
     height: 300px;
