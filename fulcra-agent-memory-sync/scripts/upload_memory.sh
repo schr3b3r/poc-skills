@@ -45,7 +45,7 @@ REQUEST_JSON="{
     \"path\": \"$UPLOAD_PATH\"
   }"
 
-RESPONSE=$(curl -s -X POST "https://api.devfulcra.com/input/v1/file_upload" \
+RESPONSE=$(curl -s -X POST "https://api.fulcradynamics.com/input/v1/file_upload" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d "$REQUEST_JSON")
@@ -58,15 +58,15 @@ if [ -z "$UPLOAD_URL" ]; then
     STATUS=$(echo "$RESPONSE" | jq -r '.status // empty')
     if [ "$STATUS" == "409" ]; then
         echo "File already exists. Deleting the existing file to overwrite..."
-        FILE_JSON=$(curl -s -H "Authorization: Bearer $TOKEN" "https://api.devfulcra.com/input/v1/file_upload?path=$UPLOAD_PATH" | jq -r ".files[] | select(.name == \"$FILE_NAME\")")
+        FILE_JSON=$(curl -s -H "Authorization: Bearer $TOKEN" "https://api.fulcradynamics.com/input/v1/file_upload?path=$UPLOAD_PATH" | jq -r ".files[] | select(.name == \"$FILE_NAME\")")
         INPUT_ID=$(echo "$FILE_JSON" | jq -r '.id // empty')
         
         if [ -n "$INPUT_ID" ]; then
             # Delete the file
-            curl -s -X DELETE -H "Authorization: Bearer $TOKEN" "https://api.devfulcra.com/input/v1/file_upload/$INPUT_ID"
+            curl -s -X DELETE -H "Authorization: Bearer $TOKEN" "https://api.fulcradynamics.com/input/v1/file_upload/$INPUT_ID"
             
             # Retry POST
-            RESPONSE=$(curl -s -X POST "https://api.devfulcra.com/input/v1/file_upload" \
+            RESPONSE=$(curl -s -X POST "https://api.fulcradynamics.com/input/v1/file_upload" \
               -H "Authorization: Bearer $TOKEN" \
               -H "Content-Type: application/json" \
               -d "$REQUEST_JSON")
